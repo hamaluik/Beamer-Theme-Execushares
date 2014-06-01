@@ -1,0 +1,190 @@
+% the various libraries we will be using
+\usepackage{tikz, datetime, textpos}
+\usetikzlibrary{calc}
+\usepackage[none]{hyphenat}
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+% since I don't know a better way to do this, these are all switches
+% doing `\setcounter{showProgressBar}{0}` will turn the progress bar off (I turn it off for Appendix slides)
+% etc
+\newcounter{showProgressBar}
+\setcounter{showProgressBar}{1}
+\newcounter{showSlideNumbers}
+\setcounter{showSlideNumbers}{1}
+\newcounter{showSlideTotal}
+\setcounter{showSlideTotal}{1}
+
+% define colours
+% taken from pickton on Adobe Kuler:
+% https://kuler.adobe.com/Some-Kind-Of-Execushares-color-theme-3837185/
+\definecolor{ExecusharesRed}{RGB}{230,37,52}
+\definecolor{ExecusharesBlack}{RGB}{43,40,40}
+\definecolor{ExecusharesBlue}{RGB}{22,190,207}
+\definecolor{ExecusharesWhite}{RGB}{255,255,243}
+\definecolor{ExecusharesGrey}{RGB}{107,110,108}
+
+% use Adobe's Source Pro fonts:
+% Source Serif Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?store=OLS-US&event=displayFontPackage&code=1966
+% Source Sans Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&code=1959
+% Source Code Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?store=OLS-US&event=displayFontPackage&code=1960
+\setmainfont{Source Serif Pro}
+\setsansfont{Source Sans Pro}
+\setmonofont{Source Code Pro}
+
+% set colours
+\setbeamercolor{itemize item}{fg=ExecusharesBlue}
+\setbeamercolor{enumerate item}{fg=ExecusharesBlue}
+\setbeamercolor{alerted text}{fg=ExecusharesBlue}
+\setbeamercolor{section in toc}{fg=ExecusharesBlack}
+
+% set fonts
+\setbeamerfont{itemize/enumerate body}{size=\large}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\small}
+
+% make the itemize bullets pixelated >
+\setbeamertemplate{itemize item}{
+	\tikz{
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0) rectangle(0.1, 0.1);
+		\draw[fill=ExecusharesBlue,draw=none] (0.1, 0.1) rectangle(0.2, 0.2);
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0.2) rectangle(0.1, 0.3);
+	}
+}
+% make the subitems also pixelated >, but a little smaller and red
+\setbeamertemplate{itemize subitem}{
+	\tikz{
+		\draw[fill=ExecusharesRed,draw=none] (0, 0) rectangle(0.075, 0.075);
+		\draw[fill=ExecusharesRed,draw=none] (0.075, 0.075) rectangle(0.15, 0.15);
+		\draw[fill=ExecusharesRed,draw=none] (0, 0.15) rectangle(0.075, 0.225);
+	}
+}
+
+% use \makeatletter for our progress bar definitions
+% progress bar idea from http://tex.stackexchange.com/a/59749/44221
+% slightly adapted for visual purposes here
+\makeatletter
+\def\progressbar@progressbar{} % the progress bar
+\newcount\progressbar@tmpcounta% auxiliary counter
+\newcount\progressbar@tmpcountb% auxiliary counter
+\newdimen\progressbar@pbwidth %progressbar width
+\newdimen\progressbar@tmpdim % auxiliary dimension
+
+% make the progress bar go across the screen
+\progressbar@pbwidth=12.8cm
+
+% use tikz to draw everything
+% it may not be the best, but it's easy to work with
+% and looks good
+% TODO: base title slide and contents slide on something other than slide numbers :/
+\setbeamertemplate{background}{
+	% deal with progress bar stuff
+	% (calculate where it should go)
+	\progressbar@tmpcounta=\insertframenumber
+	\progressbar@tmpcountb=\inserttotalframenumber
+	\progressbar@tmpdim=\progressbar@pbwidth
+	\multiply\progressbar@tmpdim by \progressbar@tmpcounta
+	\divide\progressbar@tmpdim by \progressbar@tmpcountb
+
+	\begin{tikzpicture}
+		% set up the entire slide as the canvas
+		\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+		\ifnum\thepage>2\relax % Not the title page nor the contents page
+			% the background
+			\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
+
+			% if we're showing a progress bar, show it
+			% (I disable the progress bar and slide numbers for the "Appendix" slides)
+			\ifnum \value{showProgressBar}>0\relax%
+				% the the progress bar icon in the middle of the screen
+				\draw[fill=ExecusharesGrey,draw=none] (0cm,0cm) rectangle(12.8cm,0.25cm);
+				\draw[fill=ExecusharesRed,draw=none] (0cm,0cm) rectangle(\progressbar@tmpdim,0.25cm);
+
+				% bottom information
+				\node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertsection};
+				% if slide numbers are active
+				\ifnum \value{showSlideNumbers}>0\relax%
+					% if slide totals are active
+					\ifnum \value{showSlideTotal}>0\relax%
+						% draw both slide number and slide total
+						\node[anchor=south east] at(12.8cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertframenumber/\inserttotalframenumber};
+					\else
+						% slide totals aren't active, don't draw them
+						\node[anchor=south east] at(12.8cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertframenumber};
+					\fi
+				\fi
+			% don't show the progress bar?
+			\else
+				% section title in the bottom left
+				\node[anchor=south west] at(0cm,0cm) {\color{ExecusharesGrey}\tiny\insertsection};
+				% if we're showing slide numbers
+				\ifnum \value{showSlideNumbers}>0\relax%
+					% if slide totals are active
+					\ifnum \value{showSlideTotal}>0\relax%
+						% draw both slide number and slide total
+						\node[anchor=south east] at(12.8cm,0cm) {\color{ExecusharesGrey}\tiny\insertframenumber/\inserttotalframenumber};
+					\else
+						% slide totals aren't active, don't draw them
+						\node[anchor=south east] at(12.8cm,0cm) {\color{ExecusharesGrey}\tiny\insertframenumber};
+					\fi
+				\fi
+			\fi
+
+			% title bar
+			\fill[color=ExecusharesRed] (0, 8.6cm) rectangle(12.8cm,9.6cm);
+
+			% swap the comment on these to add section titles to slide titles
+			%\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\Large\textbf{\insertsectionhead: \insertframetitle}};
+			\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\huge\textbf{\insertframetitle}};
+		\else
+			\ifnum\thepage>1\relax % contents page
+				% the background
+				\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
+
+				% title bar
+				\fill[color=ExecusharesRed] (0, 8.6cm) rectangle(12.8cm,9.6cm);
+				\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\huge\textbf{\insertframetitle}};
+			\else % Title page
+				% draw fills
+				\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
+				\fill[color=ExecusharesRed] (0, 4cm) rectangle(12.8cm, 9.6cm);
+
+				% draw the actual text
+				\node[anchor=south,text width=11.8cm,inner xsep=0.5cm] at (6.4cm,4cm) {\color{ExecusharesWhite}\Huge\textbf{\inserttitle}};
+				\node[anchor=north east,text width=11.8cm,align=right] at (12.3cm,4cm) {\color{ExecusharesBlack}\tiny\insertsubtitle};
+
+				\node[above] at(6.4cm,2.25cm) {\color{ExecusharesBlack}\tiny by};
+				\node at (6.4cm,2cm) {\color{ExecusharesBlack}\LARGE\insertauthor};
+
+				\node[anchor=south east] at(12.8cm,0cm) {\color{ExecusharesGrey}\tiny\insertdate};
+			\fi
+		\fi
+	\end{tikzpicture}
+}
+\makeatother
+
+% add section titles
+\AtBeginSection{\frame{\sectionpage}}
+\setbeamertemplate{section page}
+{
+	\begin{tikzpicture}
+		% set up the entire slide as the canvas
+		\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+		\fill[color=ExecusharesWhite] (-1cm, 1cm) rectangle(11.8cm, 9.8cm);
+		\fill[color=ExecusharesRed] (-1cm, 3.9cm) rectangle(11.8cm, 5.9cm);
+		\node[text width=11.8cm,align=center] at (5.4cm, 4.9cm) {\color{ExecusharesWhite}\Huge\textbf{\insertsection}};
+	\end{tikzpicture}
+}
+
+% custom draw the title page above
+\setbeamertemplate{title page}{}
+
+% disable navigation
+\setbeamertemplate{navigation symbols}{}
+
+% again, manually draw the frame title above
+\setbeamertemplate{frametitle}{}
+
+% disable "Figure:" in the captions
+\setbeamertemplate{caption}{\tiny\insertcaption}
+\setbeamertemplate{caption label separator}{}
