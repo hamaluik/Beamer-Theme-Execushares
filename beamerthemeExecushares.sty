@@ -1,19 +1,9 @@
 % the various libraries we will be using
-\usepackage{tikz, datetime, textpos}
+\usepackage{tikz}
 \usetikzlibrary{calc}
 \usepackage[none]{hyphenat}
 \usepackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX}
-
-% since I don't know a better way to do this, these are all switches
-% doing `\setcounter{showProgressBar}{0}` will turn the progress bar off (I turn it off for Appendix slides)
-% etc
-\newcounter{showProgressBar}
-\setcounter{showProgressBar}{1}
-\newcounter{showSlideNumbers}
-\setcounter{showSlideNumbers}{1}
-\newcounter{showSlideTotal}
-\setcounter{showSlideTotal}{1}
 
 % define colours
 % taken from pickton on Adobe Kuler:
@@ -60,11 +50,33 @@
 	}
 }
 
+% disable navigation
+\setbeamertemplate{navigation symbols}{}
+
+% custom draw the title page above
+\setbeamertemplate{title page}{}
+
+% again, manually draw the frame title above
+\setbeamertemplate{frametitle}{}
+
+% disable "Figure:" in the captions
+\setbeamertemplate{caption}{\tiny\insertcaption}
+\setbeamertemplate{caption label separator}{}
+
+% since I don't know a better way to do this, these are all switches
+% doing `\setcounter{showProgressBar}{0}` will turn the progress bar off (I turn it off for Appendix slides)
+% etc
+\newcounter{showProgressBar}
+\setcounter{showProgressBar}{1}
+\newcounter{showSlideNumbers}
+\setcounter{showSlideNumbers}{1}
+\newcounter{showSlideTotal}
+\setcounter{showSlideTotal}{1}
+
 % use \makeatletter for our progress bar definitions
 % progress bar idea from http://tex.stackexchange.com/a/59749/44221
 % slightly adapted for visual purposes here
 \makeatletter
-\def\progressbar@progressbar{} % the progress bar
 \newcount\progressbar@tmpcounta% auxiliary counter
 \newcount\progressbar@tmpcountb% auxiliary counter
 \newdimen\progressbar@pbwidth %progressbar width
@@ -89,10 +101,33 @@
 	\begin{tikzpicture}
 		% set up the entire slide as the canvas
 		\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
-		\ifnum\thepage>2\relax % Not the title page nor the contents page
-			% the background
-			\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
 
+		% the background
+		\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
+
+		% separate the drawing based on if we're the first (title) slide or not
+		\ifnum\thepage=1\relax
+			% the title page
+			% draw the fills
+			\fill[color=ExecusharesRed] (0, 4cm) rectangle(12.8cm, 9.6cm);
+
+			% draw the actual text
+			\node[anchor=south,text width=11.8cm,inner xsep=0.5cm] at (6.4cm,4cm) {\color{ExecusharesWhite}\Huge\textbf{\inserttitle}};
+			\node[anchor=north east,text width=11.8cm,align=right] at (12.3cm,4cm) {\color{ExecusharesBlack}\tiny\insertsubtitle};
+			\node[above] at(6.4cm,2.25cm) {\color{ExecusharesBlack}\tiny by};
+			\node at (6.4cm,2cm) {\color{ExecusharesBlack}\LARGE\insertauthor};
+
+			% add the date in the corner
+			\node[anchor=south east] at(12.8cm,0cm) {\color{ExecusharesGrey}\tiny\insertdate};
+		\else
+			% NOT the title page
+			% title bar
+			\fill[color=ExecusharesRed] (0, 8.6cm) rectangle(12.8cm,9.6cm);
+
+			% swap the comment on these to add section titles to slide titles
+			%\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\Large\textbf{\insertsectionhead: \insertframetitle}};
+			\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\huge\textbf{\insertframetitle}};
+			
 			% if we're showing a progress bar, show it
 			% (I disable the progress bar and slide numbers for the "Appendix" slides)
 			\ifnum \value{showProgressBar}>0\relax%
@@ -129,35 +164,6 @@
 					\fi
 				\fi
 			\fi
-
-			% title bar
-			\fill[color=ExecusharesRed] (0, 8.6cm) rectangle(12.8cm,9.6cm);
-
-			% swap the comment on these to add section titles to slide titles
-			%\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\Large\textbf{\insertsectionhead: \insertframetitle}};
-			\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\huge\textbf{\insertframetitle}};
-		\else
-			\ifnum\thepage>1\relax % contents page
-				% the background
-				\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
-
-				% title bar
-				\fill[color=ExecusharesRed] (0, 8.6cm) rectangle(12.8cm,9.6cm);
-				\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\huge\textbf{\insertframetitle}};
-			\else % Title page
-				% draw fills
-				\fill[color=ExecusharesWhite] (0,0) rectangle(12.8cm,9.6cm);
-				\fill[color=ExecusharesRed] (0, 4cm) rectangle(12.8cm, 9.6cm);
-
-				% draw the actual text
-				\node[anchor=south,text width=11.8cm,inner xsep=0.5cm] at (6.4cm,4cm) {\color{ExecusharesWhite}\Huge\textbf{\inserttitle}};
-				\node[anchor=north east,text width=11.8cm,align=right] at (12.3cm,4cm) {\color{ExecusharesBlack}\tiny\insertsubtitle};
-
-				\node[above] at(6.4cm,2.25cm) {\color{ExecusharesBlack}\tiny by};
-				\node at (6.4cm,2cm) {\color{ExecusharesBlack}\LARGE\insertauthor};
-
-				\node[anchor=south east] at(12.8cm,0cm) {\color{ExecusharesGrey}\tiny\insertdate};
-			\fi
 		\fi
 	\end{tikzpicture}
 }
@@ -175,16 +181,3 @@
 		\node[text width=11.8cm,align=center] at (5.4cm, 4.9cm) {\color{ExecusharesWhite}\Huge\textbf{\insertsection}};
 	\end{tikzpicture}
 }
-
-% custom draw the title page above
-\setbeamertemplate{title page}{}
-
-% disable navigation
-\setbeamertemplate{navigation symbols}{}
-
-% again, manually draw the frame title above
-\setbeamertemplate{frametitle}{}
-
-% disable "Figure:" in the captions
-\setbeamertemplate{caption}{\tiny\insertcaption}
-\setbeamertemplate{caption label separator}{}
