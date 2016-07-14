@@ -155,7 +155,7 @@
 				\draw[fill=ExecusharesRed,draw=none] (0cm,0cm) rectangle(\progressbar@tmpdim,0.25cm);
 
 				% bottom information
-        \node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertsection};
+        \node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\vphantom{lp}\insertsection};
 				% if slide numbers are active
 				\ifnum \value{showSlideNumbers}>0\relax%
 					% if slide totals are active
@@ -170,7 +170,7 @@
 			% don't show the progress bar?
 			\else
 				% section title in the bottom left
-				\node[anchor=south west] at(0cm,0cm) {\color{ExecusharesGrey}\tiny\insertsection};
+				\node[anchor=south west] at(0cm,0cm) {\color{ExecusharesGrey}\tiny\vphantom{lp}\insertsection};
 				% if we're showing slide numbers
 				\ifnum \value{showSlideNumbers}>0\relax%
 					% if slide totals are active
