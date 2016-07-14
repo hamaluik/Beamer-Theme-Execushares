@@ -5,6 +5,11 @@
 \usepackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX}
 
+\newif\ifbeamer@pixelitem
+\beamer@pixelitemtrue
+\DeclareOptionBeamer{nopixelitem}{\beamer@pixelitemfalse}
+\ProcessOptionsBeamer
+
 % define colours
 % taken from pickton on Adobe Kuler:
 % https://kuler.adobe.com/Some-Kind-Of-Execushares-color-theme-3837185/
@@ -39,6 +44,7 @@
 \setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
 \setbeamerfont{itemize/enumerate subsubbody}{size=\small}
 
+\ifbeamer@pixelitem
 % make the itemize bullets pixelated >
 \setbeamertemplate{itemize item}{
 	\tikz{
@@ -55,6 +61,7 @@
 		\draw[fill=ExecusharesRed,draw=none] (0, 0.15) rectangle(0.075, 0.225);
 	}
 }
+\fi
 
 % disable navigation
 \setbeamertemplate{navigation symbols}{}
@@ -148,7 +155,7 @@
 				\draw[fill=ExecusharesRed,draw=none] (0cm,0cm) rectangle(\progressbar@tmpdim,0.25cm);
 
 				% bottom information
-				\node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertsection};
+        \node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\insertsection};
 				% if slide numbers are active
 				\ifnum \value{showSlideNumbers}>0\relax%
 					% if slide totals are active
