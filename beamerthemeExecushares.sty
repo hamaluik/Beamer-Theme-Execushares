@@ -23,9 +23,9 @@
 % Source Serif Pro: https://github.com/adobe-fonts/source-serif-pro
 % Source Sans Pro: https://github.com/adobe-fonts/source-sans-pro
 % Source Code Pro: https://github.com/adobe-fonts/source-code-pro
-\setmainfont{Source Serif Pro}
-\setsansfont{Source Sans Pro}
-\setmonofont{Source Code Pro}
+%\setmainfont{Source Serif Pro}
+%\setsansfont{Source Sans Pro}
+%\setmonofont{Source Code Pro}
 
 % To use with pdflatex,
 % comment the fontspec package at the top
@@ -85,6 +85,16 @@
 \setcounter{showSlideNumbers}{1}
 \newcounter{showSlideTotal}
 \setcounter{showSlideTotal}{1}
+
+% Set beginning of backup slides
+% This lets you having the slides counter ending with the "thank you" slide and avoiding the annoying question "why is the thank you at slide 38/41?"
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
 
 % use \makeatletter for our progress bar definitions
 % progress bar idea from http://tex.stackexchange.com/a/59749/44221
