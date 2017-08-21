@@ -114,8 +114,10 @@
 	\progressbar@tmpcounta=\insertframenumber
 	\progressbar@tmpcountb=\inserttotalframenumber
 	\progressbar@tmpdim=\progressbar@pbwidth
+	\divide\progressbar@tmpdim by 100
 	\multiply\progressbar@tmpdim by \progressbar@tmpcounta
 	\divide\progressbar@tmpdim by \progressbar@tmpcountb
+	\multiply\progressbar@tmpdim by 100
 
 	\begin{tikzpicture}
 		% set up the entire slide as the canvas
