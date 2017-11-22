@@ -86,6 +86,16 @@
 \newcounter{showSlideTotal}
 \setcounter{showSlideTotal}{1}
 
+% Set beginning of backup slides
+% This lets you having the slides counter ending with the "thank you" slide and avoiding the annoying question "why is the thank you at slide 38/41?"
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
 % use \makeatletter for our progress bar definitions
 % progress bar idea from http://tex.stackexchange.com/a/59749/44221
 % slightly adapted for visual purposes here
